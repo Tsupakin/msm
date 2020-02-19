@@ -1,5 +1,6 @@
-app.appController = function($scope,$http, $filter, $interval){
+app.appController = function($scope,$http, $filter, $interval,$rootScope){
 //scope var
+
 	if ($.cookie("mach_id") == null || $.cookie("mach_id") == '') {
 		var mode = prompt("Please set your machine ID:", "2022");
 	    if(mode !== "" && mode !== null){
@@ -39,6 +40,7 @@ app.appController = function($scope,$http, $filter, $interval){
 	$('#mok').hide();
 
 	//$scope.machID = "2028";
+	$scope.TotDamageQty = "";
 	$scope.Waste = {};
 	$scope.machName = "";
 	$scope.currJobID = null;
@@ -104,7 +106,6 @@ app.appController = function($scope,$http, $filter, $interval){
 				$scope.Proof = "Proof";
 				$scope.Standard = "เก็บมาตรฐานสี";
 				$scope.Test = "ทดสอบ";
-
 
 	$scope.waste = {
 		list: $.cookie("ws"+$scope.machID) == undefined ? [] : JSON.parse($.cookie("ws"+$scope.machID)),
@@ -201,7 +202,6 @@ app.appController = function($scope,$http, $filter, $interval){
 				});
 			},800);
 		}
-
 	}
 
 
@@ -593,7 +593,7 @@ app.appController = function($scope,$http, $filter, $interval){
 		var url = $scope.serviceHost + "Msm/ashx/init.ashx?mach=" + $scope.machID;
 		$http.get(url).success(function(data){
 			Highcharts.setOptions(Highcharts.theme);
-			console.table("TON Data",data);
+
 			$scope.currJobID = data.JOB_INFO[0].CURR_JOB_ID;
 			$scope.currJobDesc = data.JOB_INFO[0].CURR_JOB_DESC;
 			$scope.speedCurr = parseInt(data.JOB_INFO[0].CURR_SPEED);
@@ -604,14 +604,17 @@ app.appController = function($scope,$http, $filter, $interval){
 			if($scope.currJobWdept == "3"){
 				$scope.Plan = "เป้าหมายการผลิต";
 			}
+			$scope.ToolsID = data.Table1[0].TOOLS_ID;
+			$scope.WipDate = data.Table1[0].WIP_DATE;
+			$scope.WipPseq = data.Table1[0].WIP_PSEQ;
+			$scope.WipUserID = data.Table1[0].CR_USER_ID;
 
 			$scope.todayPlan = data.PLAN;
 			$scope.todayPlanReal = data.REAL;
-			//console.log("TON " , "$scope.currPlanSetupTime=", $scope.currPlanSetupTime , "$scope.currPlanRunTime=" , $scope.currPlanRunTime  , "$scope.currPlanUseTime=" , $scope.currPlanUseTime );
+
 			$scope.currPlanSetupTime = parseInt(data.JOB_PLAN[0].SETUP_TIME);
 			$scope.currPlanRunTime = parseInt(data.JOB_PLAN[0].RUN_TIME);
 			$scope.currPlanUseTime = parseInt(data.JOB_PLAN[0].USED_TIME);
-			//console.log("TON " , "$scope.currPlanSetupTime=", $scope.currPlanSetupTime , "$scope.currPlanRunTime=" , $scope.currPlanRunTime  , "$scope.currPlanUseTime=" , $scope.currPlanUseTime );
 			if(!$scope.currPlanUseTime){ $scope.currPlanUseTime = 0; }
 			$scope.speedStd = parseInt((data.JOB_PLAN[0].SPEED == "" ? "0" : data.JOB_PLAN[0].SPEED));
 			$scope.spdFlag = data.JOB_PLAN[0].SPEED_FLAG;
@@ -633,23 +636,14 @@ app.appController = function($scope,$http, $filter, $interval){
 			$scope.statusID = data.JOB_REAL[0].STATUS;
 			$scope.stopAlert = parseInt(data.SPEED_LAST[0].LAST_UPDATE);
 
-			$scope.currWalFirst = data.WAL_FIRST;
-			$scope.currWalTest = data.WAL_TEST;
-			$scope.currWalProof = data.WAL_PROOF;
-			$scope.currWalStdColor = data.WAL_STD_COLOR;
-
-
 			if($scope.currJobID){
 				$scope.Svg.InitCurrJob();
 				$scope.Svg.DrawCurrJobRuler();
 				if($scope.currPlanUseTime != NaN){ $scope.Svg.DrawCurrJobPlan(); }
 				$scope.Svg.DrawCurrJobReal();
-				$scope.Svg.DrawWalFirst();
-				$scope.Svg.DrawWalTest();
-				$scope.Svg.DrawWalProof();
-				$scope.Svg.DrawWalStdColor();
-				$scope.setRedButton();
+				$scope.Svg.DrawFirst();
 			}
+
 	    	$scope.Svg.InitJobToday();
 	    	$scope.Svg.DrawJobTodayRuler();
 			$scope.Svg.DrawJobTodayPlan();
@@ -697,32 +691,6 @@ app.appController = function($scope,$http, $filter, $interval){
 		},3000);
 	}
 
-	$scope.setRedButton = function()
-	{
-		$scope.SetRedButton = {
-			button_first : false,
-			button_test : false,
-			button_proof : false,
-			button_std_color : false
-		};
-		$scope.currWalFirst.forEach(el => {
-			if (el.CHK1ST_END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
-				$scope.SetRedButton.button_first = true;
-		});
-		
-		$scope.currWalTest.forEach(el => {
-			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
-				$scope.SetRedButton.button_test = true;;
-		});
-		$scope.currWalProof.forEach(el => {
-			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
-				$scope.SetRedButton.button_proof = true;
-		});
-		$scope.currWalStdColor.forEach(el => {
-			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
-				$scope.SetRedButton.button_std_color = true;;
-		});
-	}
 	$scope.createDash = function(){
 		var c6 = $('#content-6').width();
 		$('.dashchart').css('width', (c6/2)-30);
@@ -1182,8 +1150,18 @@ app.appController = function($scope,$http, $filter, $interval){
 	  	}
   	});
 
-  	$scope.click_ = function(){
-  		
+  	$scope.click_check = function(num){
+  		var url = $scope.serviceHost + "Msm/ashx/actionCheck.ashx";
+  			
+        $.ajax({
+        	//url: $rootScope.serviceUrl + 'update_req_qty.ashx',
+		    url: url,
+        	type: "POST",
+        	data: { fn: 'insertTime' , JobID : $scope.currJobID ,WrkcID : $scope.currJobStepID, WdeptID : $scope.currJobWdept , ToolsID : $scope.ToolsID , WipDate : $scope.WipDate , WipPseq : $scope.WipPseq , WipUserID : $scope.WipUserID , WalType : num , TotDamageQty : $scope.TotDamageQty }
+        })
+        .success(function (res) {
+        	
+        });
   	}
 
 	function pad(str, max) {

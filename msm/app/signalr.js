@@ -8,7 +8,6 @@ app.signalrController = function($scope,$http){
   if (proxy) {
      proxy.client.refresh = function () {
         location.reload();
-        console.log("TON ");
      }
      proxy.client.recCurrJobInfo = function (jobID, jobDesc,statusID, jobStatusID, currSpeed,lastUpdate,lastStamp,useTime,setTime,runTime,agvStatus) {
         console.log("recCurrJobInfo: " + jobID + ", Speed: " + currSpeed + ", TimeStamp: " + lastStamp + ", Status: " + statusID);
@@ -20,14 +19,10 @@ app.signalrController = function($scope,$http){
           // $scope.toolID = toolID;
           //$scope.agvStatus = parseInt(agvStatus); //agv
           $scope.Chart.UpdateSpeed(currSpeed);
-          console.log("TON currJobID" , $scope.currJobID)
+          
           if($scope.currJobID != ""){ 
-            $scope.Svg.DrawCurrJobReal();
-            $scope.Svg.DrawWalFirst();
-            $scope.Svg.DrawWalTest();
-            $scope.Svg.DrawWalProof();
-            $scope.Svg.DrawWalStdColor();
-            $scope.setRedButton();
+            $scope.Svg.DrawCurrJobReal(parseInt(setTime),parseInt(runTime));
+            $scope.Svg.DrawFirst(parseInt(setTime),parseInt(runTime)); 
           }
           $scope.Graph.UpdateSpeedGraph(parseInt(lastStamp),parseInt(currSpeed),parseInt(statusID));
           $scope.currRealSetupTime = parseInt(setTime);

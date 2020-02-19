@@ -13,6 +13,7 @@ namespace MSMHub
     /// </summary>
     public class init : IHttpHandler
     {
+        private static Oracle o = new Oracle(WebConfigurationManager.AppSettings["OracleConnect"]);
 
         public void ProcessRequest(HttpContext context)
         {
@@ -39,40 +40,7 @@ namespace MSMHub
                 ds.Tables.Add(GetPlan(mach));
                 ds.Tables.Add(GetReal(mach));
                 ds.Tables.Add(GetLastUpdate(mach));
-                //WIP_AWAITING_LOG
-                DataTable _dt = GetWipAwaitingLog(mach, jobID, stepID);
-                DataRow[] _drs = _dt.Select("[WAL_TYPE] = '001'");
-                DataTable _dt_sel = _drs.Length == 0 ? null : _drs.CopyToDataTable();
-                if (_dt_sel != null)
-                {
-                    _dt_sel.TableName = "WAL_FIRST";
-                    ds.Tables.Add(_dt_sel);
-                }
-
-                _drs = _dt.Select("[WAL_TYPE] = '002'");
-                _dt_sel = _drs.Length == 0 ? null : _drs.CopyToDataTable();
-                if (_dt_sel != null) 
-                { 
-                    _dt_sel.TableName = "WAL_TEST";
-                    ds.Tables.Add(_dt_sel);
-                }
-
-                _drs = _dt.Select("[WAL_TYPE] = '003'");
-                _dt_sel = _drs.Length == 0 ? null : _drs.CopyToDataTable();
-                if (_dt_sel != null) 
-                { 
-                    _dt_sel.TableName = "WAL_PROOF";
-                    ds.Tables.Add(_dt_sel);
-                }
-
-                _drs = _dt.Select("[WAL_TYPE] = '004'");
-                _dt_sel = _drs.Length == 0 ? null : _drs.CopyToDataTable();
-                if (_dt_sel != null)
-                {
-                    _dt_sel.TableName = "WAL_STD_COLOR";
-                    ds.Tables.Add(_dt_sel);
-                }
-
+                ds.Tables.Add(GetWipe(mach, jobID, stepID));
                 context.Response.Write(JsonConvert.SerializeObject(ds));
             }
             catch (Exception ex)
@@ -80,50 +48,6 @@ namespace MSMHub
 
             }
         }
-
-        public static DataTable GetWipAwaitingLog(string mach, string jobID, string stepID)
-        {
-            try
-            {
-                DataRow[] _dr = Data.dtWip.Select("TOOLS_ID='" + mach + "' AND JOB_ID='" + jobID + "'  AND STEP_ID='" + stepID + "'", "INT_START_TIME DESC");
-                if (_dr.Length > 0)
-                {
-                    Oracle o = new Oracle(WebConfigurationManager.AppSettings["OracleConnect"]);
-                    string sql = String.Format(@"SELECT JOB_ID, WRKC_ID , TOOLS_ID , WAL_TYPE, WAL_STD_MIN, WDEPT_ID,WIP_DATE, WIP_PSEQ , WAL_SEQ ,  TOT_DAMAGE_QTY , START_DATE  , END_DATE , CHK1ST_START_DATE ,CHK1ST_END_DATE,
-                                                   DECODE( WAL_TYPE, '001' , 
-                                                  DECODE(CHK1ST_END_DATE , NULL , ROUND ( (SYSDATE - CHK1ST_START_DATE) *24 * 60 )   , ROUND ( (CHK1ST_END_DATE - CHK1ST_START_DATE) *24 * 60 )  
-                                                    )  , 
-                                                    DECODE(END_DATE , NULL , ROUND ( (SYSDATE - START_DATE) *24 * 60 )  ,ROUND ( (END_DATE - START_DATE) *24 * 60 ) 
-                                                     ) )  MIN_ALL_TIME
-                                                FROM KPDBA.WIP_AWAITING_LOG JOIN KPDBA.WIP_AWAITING_STD USING (WAL_TYPE)                                                   
-                                                WHERE JOB_ID = '{0}' AND WRKC_ID = '{1}' AND WDEPT_ID = '{2}' AND TOOLS_ID = '{3}' AND WIP_DATE = TO_DATE('{4}','dd/mm/yyyy')",
-                                                           _dr[0]["JOB_ID"].ToString(), _dr[0]["WRKC_ID"].ToString(), _dr[0]["WDEPT_ID"].ToString(), _dr[0]["WIP_TOOLS_ID"].ToString(), _dr[0]["WIP_DATE"].ToString().Substring(0,10));
-                    DataTable dt = o.Execute(sql);
-                    dt.TableName = "WIP_AWAITING_LOG";
-                    dt.Columns.Add("START_POINT");
-                    foreach (DataRow dr in dt.Rows) 
-                    { 
-                         TimeSpan tp;
-                        if (dr["WAL_TYPE"].ToString() == "001")
-                            tp = Convert.ToDateTime(dr["CHK1ST_START_DATE"].ToString()) - Convert.ToDateTime(_dr[0]["START_JOB_TIME"].ToString());
-                        else
-                            tp = Convert.ToDateTime(dr["START_DATE"].ToString()) - Convert.ToDateTime(_dr[0]["START_JOB_TIME"].ToString());
-                        dr["START_POINT"] = tp.TotalMinutes;
-                    }
-                    return dt;
-                }
-                else
-                {
-                    return null;
-                }
-             
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
         private static DataTable GetCurrJobReal(string mach, string jobID, string stepID)
         {
             try
@@ -392,6 +316,26 @@ namespace MSMHub
             {
                 dt.Rows.Add("0");
             }
+            return dt;
+        }
+        private static DataTable GetWipe(string mach, string jobID, string stepID)
+        {
+            DataTable dt = o.Execute(String.Format(@"SELECT A.WIP_DATE,
+                                                       A.WIP_PSEQ,
+                                                       A.CR_USER_ID,
+                                                       A.TOOLS_ID
+                                                FROM KPDBA.WIP_HEADER A, 
+                                                     KPDBA.JOB B, 
+                                                     KPDBA.MASTER_JOB_STEP C
+                                                WHERE (A.JOB_ID = B.JOB_ID) 
+                                                AND (A.WDEPT_ID = C.WDEPT_ID) 
+                                                AND (A.WRKC_ID = C.STEP_ID) 
+                                                AND A.START_JOB_TIME IS NOT NULL 
+                                                AND TRUNC(A.WIP_DATE) >= TRUNC(SYSDATE)
+                                                AND (A.BF_FLAG = 'F') 
+                                                AND A.JOB_ID = '" + jobID + "' AND C.STEP_ID = '" + stepID + "' AND SUBSTR(A.TOOLS_ID,1,4) IN (SELECT MACH_ID FROM KPDBA.MACHINE WHERE OEE_FLAG = 'T' AND  MACH_ID = '" + mach + "' ) ORDER BY A.START_JOB_TIME"));
+            
+            
             return dt;
         }
         public bool IsReusable
