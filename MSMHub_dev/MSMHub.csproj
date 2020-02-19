@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{66D616BB-024F-4CE1-8A42-727CEDAEC875}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MSMHub</RootNamespace>
+    <AssemblyName>MSMHub</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\WebHub_DEV\bin\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Owin">
+      <HintPath>..\WebHub_DEV\bin\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\WebHub_DEV\bin\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\WebHub_DEV\bin\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\WebHub_DEV\bin\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Web.CS\Portal\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="wsLibrary">
+      <HintPath>..\WebHub_DEV\bin\wsLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Msm\ashx\actionCheck.ashx" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <None Include="js\jquery-1.8.2.intellisense.js" />
+    <Content Include="js\jquery-1.8.2.js" />
+    <Content Include="js\jquery-1.8.2.min.js" />
+    <Content Include="js\jquery.signalR-1.0.0.js" />
+    <Content Include="js\jquery.signalR-1.0.0.min.js" />
+    <Content Include="js\signalr.js" />
+    <Content Include="Msm\sql\SpeedMaster.sql" />
+    <Content Include="Msm\sql\startdatetime.sql" />
+    <Content Include="Web.config" />
+    <Content Include="Msm\ashx\agv.ashx" />
+    <Content Include="Msm\ashx\dash.ashx" />
+    <Content Include="Msm\ashx\init.ashx" />
+    <Content Include="Msm\ashx\laststatus.ashx" />
+    <Content Include="Msm\ashx\mach.ashx" />
+    <Content Include="Msm\ashx\overtime.ashx" />
+    <Content Include="Msm\ashx\ref.ashx" />
+    <Content Include="Msm\ashx\sendJob.ashx" />
+    <Content Include="Msm\ashx\SpeedMaster.ashx" />
+    <Content Include="Msm\ashx\waste.ashx" />
+    <Content Include="Msm\ashx\issue.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class\EasyTimer.cs" />
+    <Compile Include="Class\Format.cs" />
+    <Compile Include="Class\GetRequest.cs" />
+    <Compile Include="Class\Label.cs" />
+    <Compile Include="Class\Log.cs" />
+    <Compile Include="Class\Oracle.cs" />
+    <Compile Include="Class\ReadFile.cs" />
+    <Compile Include="Class\Sql.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Hub\MsmHub.cs" />
+    <Compile Include="Msm\ashx\actionCheck.ashx.cs">
+      <DependentUpon>actionCheck.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\agv.ashx.cs">
+      <DependentUpon>agv.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\dash.ashx.cs">
+      <DependentUpon>dash.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\init.ashx.cs">
+      <DependentUpon>init.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\issue.ashx.cs">
+      <DependentUpon>issue.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\laststatus.ashx.cs">
+      <DependentUpon>laststatus.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\mach.ashx.cs">
+      <DependentUpon>mach.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\overtime.ashx.cs">
+      <DependentUpon>overtime.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\ref.ashx.cs">
+      <DependentUpon>ref.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\sendJob.ashx.cs">
+      <DependentUpon>sendJob.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\SpeedMaster.ashx.cs">
+      <DependentUpon>SpeedMaster.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\ashx\waste.ashx.cs">
+      <DependentUpon>waste.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Msm\class\Msm.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>60526</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:60526/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

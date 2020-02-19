@@ -1,0 +1,672 @@
+<html>
+<head>
+	<title>Machine Status Monitoring v3.8</title>
+   <meta charset="UTF-8">
+   <meta name=viewport content="width=device-width, height=device-height, user-scalable=no" />
+	<link href="css/kendo.common.min.css" rel="stylesheet">
+	<link href="css/kendo.rtl.min.css" rel="stylesheet">
+	<link href="css/kendo.default.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="http://portal.kimpai.com/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="http://portal.kimpai.com/dist/css/bootstrap-theme.min.css">
+
+	<!-- <link rel="stylesheet" type="text/css" href="css/select2.min.css"> -->
+	<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" rel="stylesheet" /> -->
+
+	<link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+	<link href="css/component.css" rel="stylesheet" type="text/css" />
+
+	<link href="js/jquery-countdown/jquery.countdown.css" rel="stylesheet" type="text/css" />
+
+	<link href="js/DataTables-1.10.4/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+	<link href="js/DataTables-1.10.4/css/jquery.dataTables_themeroller.css" rel="stylesheet" type="text/css" />
+	
+	<link href="keyboard.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="css/jquery.numpad.css">
+
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<style>
+		.axis text {
+		  font: 10px sans-serif;
+		}
+
+		.axis path, .axis line {
+		  fill: none;
+		  stroke: #000;
+		  shape-rendering: crispEdges;
+		}
+		
+		.fa-gear{
+			margin: 5px 5px 5px 2px;
+		}
+
+		.box-sel{
+			background-color: burlywood;
+		}
+
+		#modalIssue .keyboardInputInitiator{
+			position: absolute;
+		    top: 10px;
+		    right: 5px;
+		}
+
+		#side-section.blinkissue,
+		#content-section.blinkissue,#menu-section.blinkissue {
+  			background-color: RGBA(255, 180, 50, 0.9); 
+  		}
+  		#side-content #side-section .setup-label{
+	  		margin-top: 0px;
+	  	}
+
+	  	.unitsel{
+	  		text-align: center;
+		    font-size: 1.4em;
+		    background-color: silver;
+		    opacity: 0.5;    
+		    border: 1px solid #FFF;
+		    cursor: pointer;
+		    padding: 4px;
+	  	}
+	  	.unitsel.sel{
+		    background-color: #337ab7;
+		    color: #FFF;
+	  	}
+
+	</style>
+	<script type="text/javascript">
+		//var host = window.location.origin; //ไม่ได้อยากทำเลย แต่เครื่อง service ดันมี 2 ip แล้วไม่เห็นกันอีก
+	 	//if(host == "http://192.168.100.7") { window.location.href = 'index.html' }
+	</script>
+</head>
+<body class="" ng-app="APP" ng-controller="MainCtrl">
+	<div id="mok"></div>
+	<div id="popover" class="popover top" style="display: none; left: 302px; top: 345px;">
+	   <div class="arrow"></div>
+	   <h3 class="popover-title">เลขที่งาน: 6h</h3>
+	   <div class="popover-content">
+		    <p>รายละเอียด: <span class="jdesc"></span></p>
+		    <p>ขั้นตอน: <span class="jstep"></span></p>
+		    <p>เวลา Setup: <span class="jsetup"></span> นาที</p>
+		    <p>เวลา Running: <span class="jrunning"></span> นาที</p>
+		    <p>เวลารวม: <span class="jall"></span> นาที</p>
+		</div>
+	</div>
+	<ul id="menu" class="dropdown-menu hide">
+		<li class="adm">
+			<a href="javascript:void(0);" id="selMach">เปลื่ยนเครื่องจักร</a>
+			<a href="javascript:void(0);" id="selOutput">บันทึกผลผลิต</a>
+		</li>
+		<li role="separator" class="divider adm"></li>
+		<li><a href="javascript:void(0);" id="selMan">คู่มือ</a></li>
+		<li><a href="javascript:void(0);" id="selAbout">เกี่ยวกับโปรแกรม</a></li>
+	</ul>
+	<div class="row">
+		<div id="main-content" class="col col-md-10">
+			<div id="title-section">
+				<span class="btnMenu" onclick="$('#menu').toggleClass('hide');"><i class="fa fa-bars fa-button"></i></span>
+				<span class="title">{{Title}} {{Version}}</span>
+			</div>
+			<div id="menu-section">
+				<a href="#curjob" id="title-curjob" class="caption">
+			      <img src="image/machine.png" alt="Current Job" data-alt-src="image/machine-hover.png"  />
+			      <span>{{Menu.CurrJob}}</span>
+			   </a>
+			   <a href="#today" id="title-today" class="caption">
+			      <img src="image/calendar.png" alt="Today" data-alt-src="image/calendar-hover.png" />
+			      <span>{{Menu.ToDay}}</span>
+			   </a>
+			   <a href="#joborder" id="title-joborder" class="caption">
+			      <img src="image/jobdesc.png" alt="JobOrder" data-alt-src="image/jobdesc.png" />
+			      <span>{{Menu.JobOrder}}</span>
+			   </a>
+			   <a href="#status" ng-hide="showStatus" id="title-status" class="caption status">
+			      <img src="image/mms.png" alt="Status" data-alt-src="image/mms.png" />
+			      <span>{{Menu.Status}}</span>
+			   </a>
+			   <a href="#waste" id="title-waste" class="caption">
+			      <img src="image/waste.png" alt="Status" data-alt-src="image/waste.png" />
+			      <span>{{Menu.Waste}}</span>
+			   </a>
+			   <a href="#dash" id="title-dash" class="caption">
+			      <img src="image/dashboard.png" alt="Dash" data-alt-src="image/dashboard.png" />
+			      <span>{{Menu.Dash}}</span>
+			   </a>
+			   <div id="menu-slider"></div>
+			</div>
+		</div>
+		<div id="side-content" class="col col-md-2">
+			<div id="mach-section">
+				{{machID}}
+			</div>
+			<div id="side-section">
+				<div id="status-label" class="cont">{{machSDLabel}}</div>
+				<div class="row running" id="chart-running"></div>
+				<div id="speedStd-label" class="running">ความเร็วที่กำหนด<br><span>{{speedStd | number:0}}{{spdFlag}}</span></div>
+				<div id="setup-label-top" class="setup setup-label"><span>{{setup.real}} / {{setup.plan}}</span></div>
+				<div class="row setup" id="chart-setup"></div>
+				<div class="row setup setup-label" id="setupEnd-label">กำหนดเสร็จ<br><span>{{setupEnd}}น.</span></div>
+				<!-- div class="row setup running running-label {{class.speedAvg}}">ความเร็วเฉลี่ย<br><span>{{speedAvg | number:0}}</span></div>
+				<div class="row setup running running-label {{class.doneTime}}">ประมาณเวลาเสร็จงาน<br><span>{{doneTime | number:0}} นาที</span></div> -->
+				<div id="inform-label-top" class="row inform"><span></span></div>
+				<div class="row inform" id="chart-inform"></div>
+				<div class="hi-icon-wrap hi-icon-effect-1 hi-icon-effect-1a cont">
+					<div class="btn btn-default btn-lg" style="width: 75%; font-size: 1.7em; margin-bottom: 15px;" ng-click="popIssue(issue.state);" ng-disabled="issue.inproc" ng-show="(statusID == 2 || statusID == 3) && issue.ready">
+						{{ issue.state ? 'เสร็จสิ้นปัญหา' : 'แจ้งปัญหา' }}
+					</div>
+
+					<div ng-show="(machID == '2021' || machID == '2022' || machID == '2024' || machID == '2025' || machID == '2027' || machID == '2029' || machID == '2030')" class="btn btn-default btn-lg" style="width: 75%; font-size: 1.7em; margin-bottom: 15px;" ng-disabled="agvStatus != 0 || agvCall" ng-click="updateAgvStatus();">
+						<span ng-show="agvStatus == 0">กดเพื่อเรียกรถ</span>
+						<span ng-show="agvStatus != 0">รอรถ</span>
+						<!-- <span ng-show="agvStatus == 1">รอยืนยันเรียกรถ<br>กดเพื่อยกเลิก</span>
+						<span ng-show="agvStatus == 2">รถกำลังมา<br>กดเพื่อยกเลิก</span>
+						<span ng-show="agvStatus == 3">รอยืนยันยกเลิก</span> -->
+					</div>
+					<br>
+					<i class="fa fa-bell-slash hi-icon" id="inform-cancel" title="ปิดการแจ้ง"></i>
+					<i class="fa fa-refresh hi-icon" id="reload" title="เรียกหน้านี้ใหม่" onclick="location.reload();"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="content-section">
+		<div id="content-1">
+			<div class="row">
+				<div class="col col-md-2 lb" style="width: 12%;">
+					{{JobID}}
+				</div>
+				<div class="col col-md-10 currJobID" style="width: 88%;">
+					<b style="font-size: 35px;">{{currJobID}}</b> : {{currJobDesc}}
+				</div>
+			</div>
+			<div class="row currJobBar">
+				<div class="col-md-2" style="width: 12%;">
+					<div class="row" style="height: 55px;"></div>
+					<div class="row lb">{{Plan}}</div>
+					<div class="row" style="height: 50px;"></div>
+					<div class="row lb">{{Real}}</div>
+					<div class="row" style="height: 30px;"></div>
+					<div class="row lb">{{First}}</div>
+					<div class="row" style="height: 10px;"></div>
+					<div class="row lb">{{Proof}}</div>
+					<div class="row" style="height: 10px;"></div>
+					<div class="row lb">{{Standard}}</div>
+					<div class="row" style="height: 10px;"></div>
+					<div class="row lb">{{Test}}</div>
+				</div>
+				<div class="col-md-10" style="width: 88%;">
+	            <div class="row" id="chart-curjob"></div>
+	         </div>
+			</div>
+			<div class="row">
+				<div class="col-md-3">
+					<div id="btn_Test" class="btn btn-default">						
+					</div>
+					<div class="head_btn">
+						ทดสอบ
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div id="btn_Proof" class="btn btn-default">						
+					</div>
+					<div class="head_btn">
+						Proof
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div id="btn_Standard" class="btn btn-default">						
+					</div>
+					<div class="head_btn">
+						เก็บมาตรฐานสี
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div id="btn_Check" class="btn btn-default">						
+					</div>
+					<div class="head_btn">
+						ตรวจแผ่นแรก
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-1">
+					<div class="topic_time">เริ่ม</div>
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-1">
+					<div class="topic_time">ผ่านไปแล้ว</div>
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-1">
+				</div>
+			</div>
+		</div>
+		<div id="content-2">
+			<div class="row">
+				<div id="wrapper-speed-graph"></div>
+				<div class="row todayJobBar">
+				<div class="col-md-2" style="width: 12%;">
+					<div class="row" style="height: 40px;"></div>
+					<div class="row lb">แผนการผลิต</div>
+					<div class="row" style="height: 5px;"></div>
+					<div class="row lb">{{PlanNow}}</div>
+					<div class="row" style="height: 18px;"></div>
+					<div class="row lb">{{Real}}</div>
+				</div>
+				<div class="col-md-10" style="width: 88%;">
+	            <div class="row" id="chart-jobtoday"></div>
+	         </div>
+			</div>
+			</div>
+		</div>
+		<div id="content-3" style="width: 1138px;height: 543px;background: white;">
+			<iframe id="frameJdesc" scrolling="yes" width="100%" height="100%"></iframe>
+		</div>
+		<div id="content-4" class="status">
+			<iframe id="frameStatus" scrolling="no" width="100%" height="100%"></iframe>
+		</div>
+		<div id="content-5" class="waste" style="background-color: #FFF; padding:0px 20px; position: relative;">
+			<!-- <div class="row">
+				<div class="col col-md-1">
+					<div class="btn btn-lg btn-default" ng-click="waste.clear();">ล้างรายการ</div>
+				</div>
+				<div class="col col-md-3" style="text-align:right;">จำนวนดึงดูสี: {{ waste.cqty | number:0 }}</div>
+				<div class="col col-md-3" style="text-align:right;">จำนวนของเสีย: {{ waste.wqty | number:0 }}</div>
+				<div class="col col-md-3" style="text-align:right;">จำนวนแผ่น/พาเลท</div>
+				<div class="col col-md-2">
+					<input class="wnumpad" type="text" style="width: 100%;text-align:right;background-color: skyblue;" ng-model="waste.counter" ng-change="waste.counterChange();">
+				</div>
+			</div>
+			<div class="row" style="position: absolute;top: 70px;bottom: 10px;left: 10px;right: 10px; overflow: auto;">
+				<table  style="width: 100%; font-size: 24px; margin-top: 10px;" class="table-bordered">
+					<thead>
+						<tr>
+							<td style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">พาเลทที่</td>
+							<td style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">จำนวนดึงดูสี</td>
+							<td style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">จำนวนของเสีย</td>
+							<td ng-hide="true" style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">จำนวนเสียสะสม</td>
+							<td style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">ดึงพาเลท ที่ Counter</td>
+							<td ng-hide="true" style="text-align:center; background-color: RGBA(102, 139, 139, 1); color: #FFF;">Counter ตั้งต้น</td>
+						</tr>
+					</thead>
+					<tbody style="font-weight: bold;">
+					{{d.waste == null ? '-' : d.waste}}
+						<tr ng-repeat="d in waste.list">
+							<td style="text-align:center; text-w">{{d.no}}</td>
+							<td><input class="tcnumpad" data-no="{{d.no}}" ng-click="waste.numLabel = d.no;" type="text" style="width: 100%;text-align:right;background-color: skyblue; padding-right: 10px;" value="{{d.chk | number:0}}"></td>
+							<td><input class="twnumpad" data-no="{{d.no}}" ng-click="waste.numLabel = d.no;" type="text" style="width: 100%;text-align:right;background-color: skyblue; padding-right: 10px;" value="{{d.waste | number:0}}"></td>
+							<td ng-hide="true" style="text-align:right; padding-right: 10px;">{{d.sum | number:0}}</td>
+							<td style="text-align:right; padding-right: 10px;">
+								{{ d.chk != null || d.waste != null ? (d.total | number:0) : null}}
+							</td>
+							<td ng-hide="true" style="text-align:right; padding-right: 10px;">{{d.count | number:0}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div> -->
+			<div class="row"  ng-include="'waste.html'">
+			</div>
+		</div>
+		<div id="content-6" class="dash">
+			<div class="row" >
+				<div class="col col-md-6"> <div id="dashchart1" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+				<div class="col col-md-6"> <div id="dashchart2" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+				<div class="col col-md-6"> <div id="dashchart3" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+				<div class="col col-md-6"> <div id="dashchart4" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+				<div class="col col-md-6"> <div id="dashchart5" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+				<div class="col col-md-6"> <div id="dashchart6" class="dashchart" style="width: 570px; height: 270px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="titleTarget" aria-hidden="true" data-copy="">
+      <div class="modal-dialog" style="width: 50%; max-width: 450px;">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Login</h4>
+              </div>
+              <div class="modal-body" style="padding-bottom: 0px;">
+                <div class="container-fluid">
+                  	<div class="row">
+						<div class="col-xs-2">
+      					<img src="image/kpasscopy.png" alt="K-PASS" />
+						</div>
+						<div class="col-xs-10">
+							<div id="inform-div-user"><input type="text" id="inform-input-user" class="form-control" placeholder="User Name"></div>
+							<br>
+							<div id="inform-div-pass"><input type="password" id="inform-input-pass" class="form-control" placeholder="Password"></div>
+							<br>
+						</div>
+                  	</div>
+				</div>
+              </div>
+              <div class="modal-footer">
+                  <button id="btnLogin" type="button" class="btn btn-primary btnLogin">ตกลง</button>
+                  <button onclick="$('#modalLogin input').val('');" type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+              </div>
+          </div>
+      </div>
+   </div>
+   <div class="modal fade" id="modalMach" tabindex="-1" role="dialog" aria-labelledby="titleTarget" aria-hidden="true">
+      <div class="modal-dialog" style="width: 80%; max-width: 940px;">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">เลือกเครื่องจักร</h4>
+              </div>
+              <div class="modal-body" style="padding-bottom: 0px;">
+                  <div class="container-fluid">
+                  	<div>
+							  <ul class="nav nav-tabs" role="tablist">
+							    <li role="presentation" class="active">
+							    	<a href="#t1" aria-controls="t1" role="tab" data-toggle="tab">ฟิล์ม</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t2" aria-controls="t2" role="tab" data-toggle="tab">ตัด</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t3" aria-controls="t3" role="tab" data-toggle="tab">พิมพ์</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t4" aria-controls="t4" role="tab" data-toggle="tab">ปั๊ม</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t5" aria-controls="t5" role="tab" data-toggle="tab">อาบมัน-รีดเงา</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t6" aria-controls="t6" role="tab" data-toggle="tab">ขึ้นรูปกล่อง/แกะกล่อง</a>
+							    </li>
+							    <li role="presentation">
+							    	<a href="#t7" aria-controls="t7" role="tab" data-toggle="tab">ทั่วไป</a>
+							    </li>
+							  </ul>
+
+							  <!-- Tab panes -->
+							  <div class="tab-content">
+							    <div role="tabpanel" class="tab-pane active" data-val="1" id="t1"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="2" id="t2"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="3" id="t3"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="4" id="t4"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="5" id="t5"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="6" id="t6"><div class="row"></div></div>
+							    <div role="tabpanel" class="tab-pane" data-val="7" id="t7"><div class="row"></div></div>
+							  </div>
+
+							</div>
+				     </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+              </div>
+          </div>
+      </div>
+   </div>
+   <div class="modal fade" id="modalDoc" tabindex="-1" role="dialog" aria-labelledby="titleTarget" aria-hidden="true">
+      <div class="modal-dialog" style="width: 80%; max-width: 900px;">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title"></h4>
+              </div>
+              <div class="modal-body" style="padding-bottom: 0px;">
+                  <div class="container-fluid">
+                  	<div class="row man">
+								<object data="doc/MSM_Manual.pdf" width="100%" height="70%"></object>
+                  	</div>
+                  	<div class="row about">
+								<object data="timeline/index.html" width="100%" height="70%"></object>
+                  	</div>
+				     </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+              </div>
+          </div>
+      </div>
+   </div>
+   <div class="modal fade" id="modalIssue" tabindex="-1" role="dialog" aria-labelledby="titleTarget" aria-hidden="true" data-copy="" data-backdrop="static">
+      <div class="modal-dialog" style="width: 60%; max-width: 500px;">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">ระบุปัญหา</h4>
+              </div>
+              <div class="modal-body smart-form" style="padding-bottom: 0px;">
+	              	<div class="container-fluid">
+	                  	<div class="row hide">
+                  			<label>ผู้แจ้ง</label><br>
+							<div class="col-xs-2">
+	      						<img src="image/kpasscopy.png" alt="K-PASS" />
+							</div>
+							<div class="col-xs-10">
+								<div style="position: relative;"><input type="text" class="form-control" id="issue-user" placeholder="User Name" ng-model="issue.user"></div>
+								<br>
+								<div style="position: relative;"><input type="password" class="form-control" id="issue-pwd" placeholder="Password" ng-model="issue.pwd"></div>
+								<br>
+							</div>
+	                  	</div>
+			            <!-- <br> -->
+	                  	<!-- <div class="row">
+	                  		<label>ปัญหาของหน่วยงาน</label><br>
+	                  		<label class="radio-inline" style="font-size: 14px;"><input type="radio" ng-model="issue.unit" name="optradio" value="0">แผนก </label>
+							<label class="radio-inline" style="font-size: 14px;"> <input type="radio" ng-model="issue.unit" name="optradio" value="1">QA </label>
+							<label class="radio-inline" style="font-size: 14px;"> <input type="radio" ng-model="issue.unit" name="optradio" value="2">วิศวกรรม </label>
+	                  		<label class="radio-inline" style="font-size: 14px;"> <input type="radio" ng-model="issue.unit" name="optradio" value="3">คลัง </label>
+							<label class="radio-inline" style="font-size: 14px;"> <input type="radio" ng-model="issue.unit" name="optradio" value="4">Prepress </label>
+							<label class="radio-inline" style="font-size: 14px;"> <input type="radio" ng-model="issue.unit" name="optradio" value="5">อื่นๆ </label>
+			            </div> -->
+			            <div class="row">
+	                  		<label>ปัญหาของหน่วยงาน</label><br>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 0; issue.act = '';" ng-class="issue.unit == 0 ? 'sel' : ''">แผนก</div>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 1; issue.act = '';" ng-class="issue.unit == 1 ? 'sel' : ''">QA</div>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 2; issue.act = '';" ng-class="issue.unit == 2 ? 'sel' : ''">วิศวกรรม</div>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 3; issue.act = '';" ng-class="issue.unit == 3 ? 'sel' : ''">คลัง</div>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 4; issue.act = '';" ng-class="issue.unit == 4 ? 'sel' : ''">Prepress</div>
+			            	<div class="col col-md-6 unitsel" ng-click="issue.unit = 5; issue.act = '';" ng-class="issue.unit == 5 ? 'sel' : ''">อื่นๆ</div>
+			            </div>
+			            <br>
+	                  	<div class="row">
+	                  		<label>ปัญหาที่พบ (กิจกรรม)</label>
+		                  	<div class="row">
+		                  		<div class="col col-md-3" style="padding: 0px;">
+		                  			<input type="text" class="form-control actid" placeholder="ระบุกิจกรรม" style="cursor: pointer; background-color: #FFF; text-align: center;">
+		                  		</div>
+		                  		<div class="col col-md-9" style="padding: 0px; padding-left: 5px;">
+		                  			<select class="form-control select2" id="selActid" ng-model="issue.act">
+					               		<option ng-repeat="w in WIP_ACT | filter: { MSM_UNIT: issue.unit }" value="{{w.ACT_ID}}">{{w.ACT_ID}} - {{w.ACT_DESC}}</option>
+					               	</select>
+		                  		</div>
+		                  	</div>
+	                  	</div>
+			            <br>
+					</div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" ng-disabled="issue.inproc" ng-click="saveIssue();">ตกลง</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+              </div>
+          </div>
+      </div>
+   </div>
+
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.signalR-1.0.0.min.js" type="text/javascript"></script>
+<script type="text/javascript">//ไม่ได้อยากทำเลย แต่เครื่อง service ดันมี 2 ip แล้วไม่เห็นกันอีก
+	// var host = window.location.origin;
+	// if(host == "http://localhost:8080") { host = "http://portal.kimpai.com:28000/signalr/hubs"; }
+ // 	else{ host + "/signalr/hubs"; } 
+ // 	//$('#signalr').attr('src',host);
+ // 	//$.getScript(host);
+ //   var loadScript = function(src, callbackfn) {
+	//     var newScript = document.createElement("script");
+	//     newScript.type = "text/javascript";
+	//     newScript.setAttribute("async", "true");
+	//     newScript.setAttribute("src", src);
+
+	//     if(newScript.readyState) {
+	//         newScript.onreadystatechange = function() {
+	//             if(/loaded|complete/.test(newScript.readyState)) callbackfn();
+	//         }
+	//     } else {
+	//         newScript.addEventListener("load", callbackfn, false);
+	//     }
+
+	//     document.documentElement.firstChild.appendChild(newScript);
+	// }
+
+	
+	// loadScript(host, function() { });
+</script>
+<!-- <script src="js/jquery.signalR-2.2.0.min.js" type="text/javascript"></script> -->
+<!-- <script src="http://192.168.55.88:28000/signalr/hubs" type="text/javascript"></script> -->
+<!-- <script src="http://localhost:49288/signalr/hubs" type="text/javascript"></script> -->
+<!-- <script src="http://192.168.100.7:28000/signalr/hubs" type="text/javascript"></script> -->
+<!-- <script src="http://192.168.1.7:28000/signalr/hubs" type="text/javascript"></script> -->
+<!-- <script src="http://localhost:28001/signalr/hubs" type="text/javascript"></script> -->
+<script src="http://localhost:60526/signalr/hubs" type="text/javascript"></script>
+
+<script src="js/angular.min.js"></script>
+
+<script src="js/kendo.all.min.js"></script>
+<script src="js/console.js"></script>
+<script src="js/kendo.culture.th-TH.js" type="text/javascript"></script>
+
+<script src="js/highcharts/js/highcharts.js" type="text/javascript"></script>
+<script src="js/highcharts/js/highcharts-more.js" type="text/javascript"></script>
+<script src="js/highcharts/js/modules/solid-gauge.js" type="text/javascript"></script>
+<script src="js/highcharts/js/modules/exporting.js" type="text/javascript"></script>
+<script src="js/highcharts/js/themes/grid-modify.js" type="text/javascript"></script>
+<script src="js/highcharts/plugin/multicolor_series-master/js/multicolor_series.js" type="text/javascript"></script>
+
+<!--<script src="https://code.highcharts.com/modules/exporting.js"></script>-->
+
+<script src="js/d3-3.4.13/d3.min.js" type="text/javascript"></script> 
+<script src="js/Chart.min.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js" type="text/javascript"></script>
+<script src="js/north.js" type="text/javascript"></script>
+<!-- <script src="js/select2.min.js" type="text/javascript"></script> -->
+<script src="keyboard.js" type="text/javascript"></script>
+<script src="js/jquery.numpad.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.min.js"></script> -->
+
+<script type="text/javascript">
+	setInterval(function(){
+		location.reload();
+	},1000 * 60 * 30);
+	var app = angular.module("APP",[]);
+</script>
+<script src="app/main.js"></script>
+<script src="app/label.js"></script>
+<script src="app/properties.js"></script>
+<script src="app/app.js"></script>
+<script src="app/svg.js"></script>
+<script src="app/signalr.js"></script>
+<!-- <script type="text/javascript">
+	var p = {
+		title: {
+	        text: 'Combination chart'
+	    },
+	    credits: {
+		    enabled: false
+		},
+		legend: {
+			enabled: false
+		},
+	    xAxis: {
+	        categories: ['1', '2', '3', '4', '5','6', '7', '8', '9', '10',
+	        			'11', '12', '13', '14', '15','16', '17', '18', '19', '20',
+	        			'21', '22', '23', '24', '25','26', '27', '28', '29', '30']
+	    },
+	    yAxis: {
+	    	title: {
+	    		enabled: false
+	    	}
+	    },
+	    labels: {
+	        items: [{
+	            html: 'Total fruit consumption',
+	            style: {
+	                left: '10px',
+	                top: '5px',
+	                color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+	            }
+	        }]
+	    },
+	    series: [{
+	        type: 'column',
+	        name: 'Actual',
+	        colorByPoint: true,
+	        data: [3, 2, 1, 3, 4, 2, 1, 3, 4, 6, 3, 2, 1, 3, 4, 2, 1, 3, 4, 6, 3, 2, 1, 3, 4, 2, 1, 3, 4, 6],
+	        colors: ["red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink","red","black","pink"]
+	    }, {
+	        type: 'spline',
+	        name: 'Target',
+	        data: [3, 2, 1, 3, 4, 2, 1, 3, 4, 6, null, 2, 1, 3, 4, 2, 1, 3, 4, 6, 3, 2, 1, 3, 4, 2, 1, 3, 4, 6],
+	        marker: {
+	            lineWidth: 2,
+	            lineColor: Highcharts.getOptions().colors[3],
+	            fillColor: 'white'
+	        }
+	    }]				
+	};
+
+	p.title.text = "Output";
+	$('.dashchart1').highcharts(p);
+
+	p.title.text = "% การทำงานได้ตามแผนการผลิต";
+	$('.dashchart2').highcharts(p);
+
+	p.title.text = "Excess Waste เทียบเผื่อเสีย";
+	$('.dashchart3').highcharts(p);
+	
+	p.title.text = "% จำนวนงานที่เกิด Excess Waste";
+	$('.dashchart4').highcharts(p);
+	
+	p.title.text = "% อัตราการเดินเครื่อง";
+	$('.dashchart5').highcharts(p);
+	
+	p.title.text = "% อัตรารับภาระงาน ";
+	$('.dashchart6').highcharts(p);
+	
+	p.title.text = "% อัตราคุณภาพ ";
+	$('.dashchart7').highcharts(p);
+	
+	p.title.text = "ของเสียและต้นเหตุ";
+	$('.dashchart8').highcharts(p);
+	
+	p.title.text = "การทำงานไม่ได้ตามแผนและต้นเหตุ";
+	$('.dashchart9').highcharts(p);
+</script> -->
+</html>

@@ -1,0 +1,403 @@
+@import url(webfonts/thsarabunnew.css);
+@import url(webfonts/tf_uthong.css);
+@import url(webfonts/dsn_lardphrao.css);
+@import url(webfonts/rsu.css);
+
+//Color
+$color-title: RGBA(102,139,139,1);
+$color-font-title: RGBA(180,225,229,1);
+$color-hover: RGBA(102,139,139,0.25);
+
+//blink
+$transition-blink: background-color 0.8s ease;
+$transition-font: color 0.8s ease;
+
+//font
+$font-1: THSarabunNew;
+
+@mixin font-set-1 {
+    font-family: $font-1;
+    font-size: 26px;    
+}
+@mixin mp-0 {
+    margin: 0px;
+    padding: 0px;   
+}
+
+* {
+    @include mp-0;
+}
+
+body{
+	@include mp-0;
+	overflow: hidden;
+}
+
+.hide{
+	display: none;
+}
+
+col{
+	padding-left: 0px; 
+    padding-right: 0px; 
+}
+.row{
+	@include mp-0;
+}
+
+#main-content{
+    @include font-set-1;
+	@include mp-0;
+	
+	#title-section{
+		height: 34px;
+	    background-color: $color-title;
+	    color: $color-font-title;
+
+	    .title{ 
+		    float: right;
+		    color: white;
+		    padding: 0px 10px;
+		    height: 34px;
+		    line-height: 34px;  
+		}
+
+		.btnMenu i{
+			margin: 3px 0px 0px 5px;
+			cursor: pointer;
+		    color: white;
+		}
+		.btnMenu i:hover{
+			color: $color-font-title;
+		}
+	}
+
+	#menu-section{
+		height: 100px;	
+	    position: relative;
+	    border-bottom: 1px solid $color-title;
+		transition: $transition-blink;
+
+	    a.caption{
+		    float: left;
+		    width: 190px;
+		    height: 100px;
+		    padding-top: 10px;
+		    text-align: center;
+		    margin: 0px 0px;
+		    line-height: 30px;
+		    cursor: pointer;
+		    font-family: $font-1;
+		    font-weight: bold;
+		    font-size: 24px;
+		    color: #434d56;
+
+			img {
+			    width: 120px;
+			    height: 85%;
+			}
+		}
+		a.caption:hover{
+		    color: $color-title;
+		    background-color: $color-hover;
+		}
+
+		.caption-last{
+		    border-right: none;
+		}
+
+		span{
+			margin-left: -25px;
+		}
+
+		#menu-slider{
+		    width: 190px;
+		    height: 10px;
+		    bottom: 0px;
+		    position: absolute;
+		    background-color: $color-title;
+		}
+	}
+}
+
+#content-section{
+	position: absolute;
+	height: 500px;
+	top: 134px;
+	width: 600px;
+	z-index: 10;
+	font-family: $font-1;
+	transition: $transition-blink;
+  	background-color: RGBA(255,25,25,0);
+
+	> div{
+		float: left;
+	}
+
+	.lb{
+		text-align: right;
+	}
+	.col{
+		padding-top: 15px;
+		font-size: 30px;
+		font-weight: bold;
+	}
+	.col.lb-mini{
+		text-align: right;
+		font-size: 26px;
+		font-weight: bold;
+		padding-top: 2px;
+	}
+
+	#content-1{
+		.currJobBar{
+			margin: 0px; 
+    		font-size: 26px;
+    		font-weight: bold;
+		}
+	}
+
+	#content-2{
+		.todayJobBar{
+    		font-size: 26px;
+    		font-weight: bold;
+		}
+	}
+}
+#wrapper-speed-graph{
+    height: 320px;
+
+    span {
+	    background-color: RGB(255, 255, 153);
+	    text-align: center;
+	    margin-top: 1px !important;
+	}
+}
+
+#side-content{
+	@include mp-0;
+	z-index: 100;
+	background-color: #FFF;
+
+	#mach-section{
+		font-size: 94px;
+	    text-align: center;
+	    color: #FFF;
+	    background-color: $color-title;
+	}
+
+	#side-section{
+	    border-left: 1px solid $color-title;
+		transition: $transition-blink;
+
+		#status-label{
+	    	text-align: center; 
+	    	font-family: $font-1;
+	    	font-size: 50px;
+	    	font-weight: bold;
+	    	margin-bottom: -20px;
+	    	min-height: 71px;
+			transition: $transition-font;
+		}
+
+		#setup-label-top,#inform-label-top{
+	    	text-align: center; 
+	    	font-family: $font-1;
+	    	font-size: 45px;
+	    	font-weight: bold;
+	    	margin-bottom: -20px;
+	    	min-height: 71px;
+			transition: $transition-font;
+		}
+
+		#speedStd-label,.setup-label,.running-label{
+	    	@include font-set-1;
+	    	font-weight: bold;
+	    	text-align: center;    
+	    	line-height: 1;
+			transition: $transition-font;
+			margin-top: 10px;
+	    	span{
+	    		font-size: 40px;
+	    	}
+		}
+	}
+
+	.hi-icon-wrap{
+		position: absolute;
+	    bottom: 10px;
+	    width: 100%;
+	}
+}
+
+svg text{
+	z-index: 1;
+    position:absolute;
+}
+
+svg .stroke-dash1{
+    position:absolute;
+	z-index: -1;
+}
+
+.realblink{
+	opacity: 1;
+	transition: opacity 0.8s ease;
+}
+	.realblink.blink{
+		opacity: 0;
+	}
+
+.todayPlan{
+	// font-size: 12px;
+}
+
+#modalLogin{
+	input{
+		font-size: 19px;
+		text-align: center;
+	}
+}
+
+div.modal-backdrop{
+	z-index: 1000;
+}
+
+.dropdown-menu{
+	display: block;
+}
+
+#menu{
+	position: absolute;
+	top: 35px;
+	left: 2px;
+	z-index: 800;
+}
+
+.tab-pane div.machine{
+	cursor: pointer;
+}
+.tab-pane div.machine:hover{
+	background-color: RGBA(102,139,139,0.25);
+}
+#popover {
+    width: 420px;
+    height: 210px;
+}
+
+.popover-content{
+	> p{
+		font-weight: bold;
+	}
+	p > span{
+		font-weight: 100;
+	}
+}
+
+#mok{
+	background-color: #FFF;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 1000px;
+	z-index: 20000;
+}
+
+#content-section.blink,
+#menu-section.blink,
+#side-section.blink{
+  	background-color: RGBA(255,25,25,0.9);
+
+  	#status-label,
+  	#speedStd-label,
+  	#setupEnd-label,
+  	#setup-label-top,
+  	.running-label,
+  	.setup-label,
+  	#inform-label-top{
+		color: #FFF;
+  	}
+}
+
+.bs-example {
+	position: relative;
+    padding: 0px;
+    margin: 0 -15px 15px;
+    border-color: #e5e5e5 #eee #eee;
+    border-style: solid;
+    border-width: 1px 0;
+    -webkit-box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
+    margin-right: 0;
+    margin-left: 0;
+    background-color: #fff;
+    border-color: #ddd;
+    border-width: 1px;
+    border-radius: 4px 4px 0 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: 0.85;
+
+    .btn{
+    	font-size: 20px;
+    	margin-bottom: 10px;
+    }
+	th,td{
+		padding: 0px 3px;
+	    font-size: 18px;
+	    white-space: nowrap;          
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	td.color-label{
+		padding: 0px;
+		width: 5px;
+		.btn{
+			height: 9px;
+			margin-top: 8px;
+		}
+	}
+	tr.sel{
+		background-color: gainsboro;
+	}
+
+    .nav-tabs{
+		li{
+			font-size: 20px;
+			font-weight: bold;
+			width: 33%;
+			text-align: center;
+
+			a{
+				padding: 5px;
+			}
+		}
+	}
+
+	.tab-content{
+		padding-top: 8px;
+
+		.control-label{
+			font-size: 20px;
+			padding: 3px 3px;
+		}	
+		
+		select{
+			padding-left: 3px;
+		}
+		select,input{
+			font-size: 18px;
+		}
+
+		.form-group{
+			padding: 5px;
+			margin-bottom: 2px;
+		}
+	}
+}
+
+.radio-inline, 
+.checkbox label{
+	font-size: 20px;
+}

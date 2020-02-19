@@ -1,0 +1,364 @@
+<div class="col col-md-6">
+	<div class="bs-example">
+	  <ul class="nav nav-tabs" role="tablist">
+	    <li role="presentation" class="active">
+	    	<a href="#wred" aria-controls="home" role="tab" data-toggle="tab">ขีดสีแดง</a>
+	    </li>
+	    <li role="presentation">
+	    	<a href="#wgreen" aria-controls="profile" role="tab" data-toggle="tab">ขีดสีเขียว</a>
+	    </li>
+	    <li role="presentation">
+	    	<a href="#whold" aria-controls="messages" role="tab" data-toggle="tab">งานรอสรุป</a>
+	    </li>
+	  </ul>
+	  <div class="tab-content ">
+	    <div role="tabpanel" class="tab-pane form-horizontal active" id="wred">
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">ปัญหาจากแผนก</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel1" ng-model="t1.Wdept">
+						<option value=""> </option>
+						<option ng-repeat="wd in Waste.WIP_DEPT" value="{{ wd.WDEPT_ID }}">{{ wd.WDEPT_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">ขั้นตอน</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel2" ng-model="t1.Step">
+						<option value=""> </option>
+						<option ng-repeat="ws in Waste.MASTER_JOB_STEP | filter: { WDEPT_ID: t1.Wdept }" value="{{ ws.WRKC_ID }}">{{ ws.WRKC_ID }} {{ ws.STEP_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">เครื่องจักร</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel3" ng-model="t1.ToolID">
+						<option value=""> </option>
+						<option ng-repeat="wt in Waste.WIP_TOOLS | filter: { WDEPT_ID: t1.Wdept } | filter: { WRKC_ID: t1.Step }" value="{{ wt.TOOLS_ID }}">{{ wt.TOOLS_ID }} {{ wt.TOOLS_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">กลุ่มปัญหา</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel4" ng-model="t1.CauseID">
+						<option value=""> </option>
+						<option ng-repeat="rcg in Waste.RPRS_CAUSE_GRP | filter: { UNIT_ID: t1.UnitID }" value="{{ rcg.CAUSE_ID }}">{{ rcg.CAUSE_ID }} {{ rcg.CAUSE_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">สาเหตุ</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel5" ng-model="t1.Waste">
+						<option value=""> </option>
+						<option ng-repeat="rc in Waste.RPRS_CAUSE | filter: { UNIT_ID: t1.UnitID } | filter: { CAUSE_ID: t1.CauseID }" value="{{ rc.WASTE_CODE }}">{{ rc.WASTE_CODE }} {{ rc.WASTE_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">จำนวนเสีย</label>
+			    <div class="col-md-3">
+					<input type="number" class="form-control" data-label="จำนวนเสีย" id="txt6" ng-model="t1.RejQty">
+			    </div>
+			    <label class="col-sm-2 control-label" style="text-align: left;">แผ่น</label>
+			    <label class="col-sm-4 control-label" style="text-align: center;">
+					<div class="checkbox">
+				        <label>
+				         	<input type="checkbox" ng-model="t1.Retsub"> เป็นวัตถุดิบคืนผู้ขายได้
+				        </label>
+				    </div>
+			    </label>
+		    </div>
+	    </div>
+	    <div role="tabpanel" class="tab-pane form-horizontal" id="wgreen">
+	    	<div class="form-group">
+			    <label class="col-sm-2 control-label">ปัญหาจาก</label>
+			    <div class="col-md-3">
+					<select class="form-control" id="sel21" ng-model="t2.Wdept">
+						<option value=""> </option>
+						<option ng-repeat="wd in Waste.WIP_DEPT" value="{{ wd.WDEPT_ID }}">{{ wd.WDEPT_DESC }}</option>
+					</select>
+			    </div>
+			    <label class="col-sm-2 control-label">แกรมกระดาษ</label>
+			    <div class="col-md-5">
+					<select class="form-control" ng-model="t2.Cal" id="sel26">
+						<option value=""> </option>
+						<option ng-repeat="rcg in Waste.CAL_STD" value="{{ rcg.CAL_ID }}">{{ rcg.CAL_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-2 control-label">ขั้นตอน</label>
+			    <div class="col-md-4">
+					<select class="form-control" id="sel22" ng-model="t2.Step">
+						<option value=""> </option>
+						<option ng-repeat="ws in Waste.MASTER_JOB_STEP | filter: { WDEPT_ID: t2.Wdept }" value="{{ ws.WRKC_ID }}">{{ ws.WRKC_ID }} {{ ws.STEP_DESC }}</option>
+					</select>
+			    </div>
+			    <label class="col-sm-3 control-label">จำนวน(แผ่น/ซม.)</label>
+			    <div class="col-md-3">
+					<input type="number" readonly="readonly" class="form-control readonly" ng-model="t2.Sheet" data-label="จำนวน(แผ่น/ซม.)">
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-2 control-label">เครื่องจักร</label>
+			    <div class="col-md-4">
+					<select class="form-control" id="sel23" ng-model="t2.ToolID">
+						<option value=""> </option>
+						<option ng-repeat="wt in Waste.WIP_TOOLS | filter: { WDEPT_ID: t2.Wdept }" value="{{ wt.TOOLS_ID }}">{{ wt.TOOLS_ID }} {{ wt.TOOLS_DESC }}</option>
+					</select>
+			    </div>
+			    <label class="col-sm-3 control-label">สูง(ซม.)</label>
+			    <div class="col-md-3">
+					<input type="number" class="form-control" id="txt27" data-label="สูง(ซม.)" ng-model="t2.RejHeight">
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-2 control-label">กลุ่มปัญหา</label>
+			    <div class="col-md-4">
+					<select class="form-control" id="sel24" ng-model="t2.CauseID">
+						<option value=""> </option>
+						<option ng-repeat="rcg in Waste.RPRS_CAUSE_GRP | filter: { UNIT_ID: t2.UnitID }" value="{{ rcg.CAUSE_ID }}">{{ rcg.CAUSE_ID }} {{ rcg.CAUSE_DESC }}</option>
+					</select>
+			    </div>
+			    <label class="col-sm-3 control-label">จำนวน(ชิ้น/แผ่น)</label>
+			    <div class="col-md-3">
+					<input type="number" class="form-control" id="txt28" data-label="จำนวน(ชิ้น/แผ่น)" ng-model="t2.ExpUnit">
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-2 control-label">สาเหตุ</label>
+			    <div class="col-md-4">
+					<select class="form-control" id="sel25" ng-model="t2.Waste">
+						<option value=""> </option>
+						<option ng-repeat="rc in Waste.RPRS_CAUSE | filter: { CAUSE_ID: t2.CauseID }" value="{{ rc.WASTE_CODE }}">{{ rc.WASTE_CODE }} {{ rc.WASTE_DESC }}</option>
+					</select>
+			    </div>
+			    <label class="col-sm-1 control-label">ขาที่</label>
+			    <div class="col-md-2">
+					<input type="number" class="form-control" id="txt29" data-label="ขาที่" ng-model="t2.Pallet">
+			    </div>
+			    <label class="col-sm-1 control-label">ขาย่อย</label>
+			    <div class="col-md-2">
+					<input type="number" class="form-control" id="txt20" data-label="ขาย่อย" ng-model="t2.SubPallet">
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <div class="col-md-9">
+				    <label class="col-sm-3 control-label">ประเภทของเสีย</label>
+				    <label class="radio-inline">
+					  <input type="radio" name="inlineRadioOptions" ng-model="t2.Split" value="0"> แยกทำลาย
+					</label>
+					<label class="radio-inline">
+					  <input type="radio" name="inlineRadioOptions" ng-model="t2.Split" value="1"> แยกส่ง
+					</label>
+					<label class="radio-inline">
+					  <input type="radio" name="inlineRadioOptions" ng-model="t2.Split" value="2"> แยกคัดได้ ของดี
+					</label>
+				</div>
+				<div class="col-md-3">
+					<select class="form-control" ng-model="t2.Per100" ng-disabled="t2.Split != '2'">
+						<option value=""> </option>
+						<option ng-repeat="n in Per100" value="{{ n }}">{{ n }} %</option>
+					</select>
+				</div>
+				<div class="col-md-4 col-md-offset-8" style="text-align: center;">
+					<div class="checkbox">
+				        <label>
+				         	<input type="checkbox" ng-model="t2.Retsub"> เป็นวัตถุดิบคืนผู้ขายได้
+				        </label>
+				    </div>
+				</div>
+		    </div>
+	    </div>
+	    <div role="tabpanel" class="tab-pane form-horizontal" id="whold">
+			<div class="form-group">
+			    <label class="col-sm-3 control-label">ปัญหาจากแผนก</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel31" ng-model="t1.Wdept">
+						<option value=""> </option>
+						<option ng-repeat="wd in Waste.WIP_DEPT" value="{{ wd.WDEPT_ID }}">{{ wd.WDEPT_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">ขั้นตอน</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel32" ng-model="t1.Step">
+						<option value=""> </option>
+						<option ng-repeat="ws in Waste.MASTER_JOB_STEP | filter: { WDEPT_ID: t1.Wdept }" value="{{ ws.WRKC_ID }}">{{ ws.WRKC_ID }} {{ ws.STEP_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">เครื่องจักร</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel33" ng-model="t1.ToolID">
+						<option value=""> </option>
+						<option ng-repeat="wt in Waste.WIP_TOOLS | filter: { WDEPT_ID: t1.Wdept }" value="{{ wt.TOOLS_ID }}">{{ wt.TOOLS_ID }} {{ wt.TOOLS_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">กลุ่มปัญหา</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel34" ng-model="t1.CauseID">
+						<option value=""> </option>
+						<option ng-repeat="rcg in Waste.RPRS_CAUSE_GRP | filter: { UNIT_ID: t1.UnitID }" value="{{ rcg.CAUSE_ID }}">{{ rcg.CAUSE_ID }} {{ rcg.CAUSE_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">สาเหตุ</label>
+			    <div class="col-md-9">
+					<select class="form-control" id="sel35" ng-model="t1.Waste">
+						<option value=""> </option>
+						<option ng-repeat="rc in Waste.RPRS_CAUSE | filter: { CAUSE_ID: t1.CauseID }" value="{{ rc.WASTE_CODE }}">{{ rc.WASTE_CODE }} {{ rc.WASTE_DESC }}</option>
+					</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label class="col-sm-3 control-label">จำนวนเสีย</label>
+			    <div class="col-md-3">
+					<input type="number" class="form-control"  id="txt36" ng-model="t1.RejQty">
+			    </div>
+			    <label class="col-sm-2 control-label" style="text-align: left;">แผ่น</label>
+		    </div>
+	    </div>
+	  </div>
+	  <div class="row">
+	  	<div class="col col-md-12 text-right">
+	  		<div class="btn btn-primary" ng-click="addWaste();">เพิ่มรายการ</div>
+	  	</div>
+	  </div>
+	</div>
+</div>
+<div class="col col-md-6">
+	<div class="bs-example" style="height: 400px;">
+		<div style="height: 330px; overflow: auto;">
+			<table style="width: 100%;" class="table-bordered">
+				<thead>
+					<tr>
+						<th class="text-center">#</th>
+						<th>สาเหตุ</th>
+						<th class="text-center">ขาที่</th>
+						<th class="text-right">จำนวน</th>
+						<th class="text-right">สี</th>
+						<th class="text-right">สูง</th>
+						<th class="text-right">ตัว</th>
+						<th class="text-right">ควบคุม</th>
+						<th class="text-center">แผนก</th>
+						<th class="text-center">เครื่องจักร</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="w in jobWaste" class="wrow">
+						<td class="text-center">{{ $index + 1 }}</td>
+						<td>{{ get.waste(w.waste_code) }}</td>
+						<td class="text-center">{{ (w.split_job_qty == '-' || w.split_job_qty == '4' ? '-' : w.pallet +'-'+ w.sub_pallet) }}</td>
+						<td class="text-right">{{ w.reject_qty }}</td>
+						<td class="text-center color-label"><div class="btn btn-xs btn-{{ (w.split_job_qty == '0-0' ? 'danger' : (w.split_job_qty == '4' ? 'warning' : 'success')) }}"></div></td>
+						<td class="text-right">{{ w.reject_height }}</td>
+						<td class="text-right">{{ w.expect_unit }}</td>
+						<td class="text-right">{{ (w.split_job_qty == '-' ? '-' : (w.split_job_qty == '4' ? '' : (w.split_job_qty == '0' ? 'ทำลาย' : (w.split_job_qty == '1' ? 'แยกส่ง' : (w.split_job_qty == '2' ? (w.split_job_per100 == '' ? 'ดี 0%' : 'ดี ' + w.split_job_per100 + '%') : '' ))))) }}</td>
+						<td class="text-center">{{ get.unit(w.unit_id) }}</td>
+						<td class="text-center">{{ w.tools_id }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row">
+			<div class="col col-md-12 text-right">
+				<div class="btn btn-default" ng-click="delWaste();">ลบรายการ</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- <div class="col col-md-2">
+	<div class="bs-example">
+	</div>
+</div> -->
+<script type="text/javascript">
+	var openSelect = function(selector){
+	     var element = $(selector)[0], worked = false;
+	    if (document.createEvent) { // all browsers
+	        var e = document.createEvent("MouseEvents");
+	        e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	        worked = element.dispatchEvent(e);
+	    } else if (element.fireEvent) { // ie
+	        worked = element.fireEvent("onmousedown");
+	    }
+	    if (!worked) { // unknown browser / error
+	        alert("It didn't worked in your browser.");
+	    }   
+	}
+
+	function setBox(el){
+		//$('.form-group.box-sel').removeClass('box-sel');
+		//el.parents('.form-group').addClass('box-sel');
+	}
+
+	var waste = [
+		{
+			unit_id:'',
+			step_id:'',
+			tools_id:'',
+			waste_code:'',
+			split_job_qty:'',
+			retsub_flag:'',
+			reject_qty:'',
+			cal_id:'',
+			pallet:'',
+			sub_pallet:'',
+			reject_height:'',
+			expect_unit:'',
+			split_job_per100:''
+		}
+	];
+
+	var numLabel = '';
+	$(document)
+		.ready(function(){
+			$.fn.numpad.defaults.gridTpl = '<table class="table modal-content"></table>';
+			$.fn.numpad.defaults.backgroundTpl = '<div class="modal-backdrop in"></div>';
+			$.fn.numpad.defaults.displayTpl = '<input type="text" class="form-control" />';
+			$.fn.numpad.defaults.buttonNumberTpl =  '<button type="button" class="btn btn-default"></button>';
+			$.fn.numpad.defaults.buttonFunctionTpl = '<button type="button" class="btn" style="width: 100%;"></button>';
+			$.fn.numpad.defaults.onKeypadCreate = function(){$(this).find('.done').addClass('btn-primary');};
+			$('input[type="number"]:not(.readonly)').numpad({
+				onKeypadOpen: function(){
+					$('.numHeader').html(numLabel);
+				},
+				openOnEvent: '',
+				decimalSeparator: '.'
+			});
+			$('.nmpd-grid tbody').prepend('<tr><td colspan="4" class="numHeader" style="text-align: center;"></td><tr>');
+		})
+		.on('change','#sel1',function(){ openSelect('#sel2');  })
+		.on('change','#sel2',function(){ openSelect('#sel3');  })
+		.on('change','#sel3',function(){ openSelect('#sel4');  })
+		.on('change','#sel4',function(){ openSelect('#sel5');  })
+		.on('change','#sel5',function(){ $('#txt6').trigger('click'); })
+		.on('click','input[type="number"]',function(){  numLabel = $(this).data('label'); $(this).numpad('open'); })
+
+		.on('change','#sel31',function(){ openSelect('#sel32');  })
+		.on('change','#sel32',function(){ openSelect('#sel33');  })
+		.on('change','#sel33',function(){ openSelect('#sel34');  })
+		.on('change','#sel34',function(){ openSelect('#sel35');  })
+		.on('change','#sel35',function(){ $('#txt36').trigger('click'); })
+		.on('click','input[type="number"]',function(){  numLabel = $(this).data('label'); $(this).numpad('open'); })
+
+		.on('change','#sel21',function(){ openSelect('#sel22');  })
+		.on('change','#sel22',function(){ openSelect('#sel23');  })
+		.on('change','#sel23',function(){ openSelect('#sel24');  })
+		.on('change','#sel24',function(){ openSelect('#sel25');  })
+		.on('change','#sel25',function(){ openSelect('#sel26');  })
+		.on('change','#sel26',function(){ $('#txt27').trigger('click');  })
+		.on('change','#txt27',function(){ $('#txt28').trigger('click');  })
+		.on('change','#txt28',function(){ $('#txt29').trigger('click');  })
+		.on('change','#txt29',function(){ $('#txt20').trigger('click');  })
+	;
+</script>
