@@ -197,6 +197,7 @@ namespace MSMHub
                 UpdateWip();
             }, 15000);
         }
+
         public static void DoUpdateWip()
         {
             try
@@ -402,14 +403,14 @@ namespace MSMHub
                 Oracle o = new Oracle(WebConfigurationManager.AppSettings["OracleConnect"]);
 
                 DataTable dt = o.Execute(String.Format(@"SELECT A.PRODUCE_QTY, A.JOB_ID, A.STEP_ID, A.ACT_DATE, A.PLAN_DATE, A.START_TIME, A.END_TIME, A.USED_TIME, NVL(A.SETUP_TIME,0) + NVL(A.STD_COLOR_TIME,0) AS SETUP_TIME, A.USED_TIME - (NVL(A.SETUP_TIME,0) + NVL(A.STD_COLOR_TIME,0)) AS RUN_TIME, A.SPEED,  A.MACH_ID,TO_CHAR((A.START_TIME + (.000694 * (NVL(A.SETUP_TIME,0) + NVL(A.STD_COLOR_TIME,0) + 1))),'HH24:MI') AS SETUP_END
-                                                    FROM KPDBA.JS_PLAN_DETAIL A ,     
-                                                    ( SELECT COMP_ID, WDEPT_ID, MAX (ACT_DATE) AS ACT_DATE      
-                                                        FROM KPDBA.JS_PLAN_REVISION 
-                                                        WHERE POST_FLAG = 'T'
-                                                        GROUP BY COMP_ID, WDEPT_ID
-                                                    ) E WHERE (A.COMP_ID = E.COMP_ID) AND (A.WDEPT_ID = E.WDEPT_ID) AND (A.ACT_DATE = E.ACT_DATE)
-                                                    AND JOB_ID = '{0}' AND STEP_ID = '{1}' AND A.WDEPT_ID = '{2}'
-                                                    ORDER BY A.START_TIME", job, step, wdept));
+                                                        FROM KPDBA.JS_PLAN_DETAIL A ,     
+                                                        ( SELECT COMP_ID, WDEPT_ID, MAX (ACT_DATE) AS ACT_DATE      
+                                                          FROM KPDBA.JS_PLAN_REVISION 
+                                                          WHERE POST_FLAG = 'T'
+                                                          GROUP BY COMP_ID, WDEPT_ID
+                                                        ) E WHERE (A.COMP_ID = E.COMP_ID) AND (A.WDEPT_ID = E.WDEPT_ID) AND (A.ACT_DATE = E.ACT_DATE)
+                                                        AND JOB_ID = '{0}' AND STEP_ID = '{1}' AND A.WDEPT_ID = '{2}'
+                                                        ORDER BY A.START_TIME", job, step, wdept));
 //                DataTable dt = o.Execute(String.Format(@"SELECT B.* FROM (SELECT ROW_NUMBER() OVER(PARTITION BY B.COMP_ID, B.JOB_ID, B.WDEPT_ID, B.STEP_ID 
 //                                                                       ORDER BY B.COMP_ID, B.JOB_ID, B.WDEPT_ID, B.STEP_ID, B.ACT_DATE DESC) ROW_ID,
 //                                                                       B.JOB_ID,
@@ -449,17 +450,7 @@ namespace MSMHub
                 return null;
             }
         }
-
-
-
-
-
-
     }
-
-
-
-
     public class Data
     {
         public static DataTable dtReg { get; set; }
