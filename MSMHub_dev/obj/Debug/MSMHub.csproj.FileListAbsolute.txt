@@ -46,3 +46,17 @@ O:\Web\MSMHub_dev\bin\Microsoft.Web.Infrastructure.xml
 O:\Web\MSMHub_dev\obj\Debug\MSMHub.csprojResolveAssemblyReference.cache
 O:\Web\MSMHub_dev\obj\Debug\MSMHub.dll
 O:\Web\MSMHub_dev\obj\Debug\MSMHub.pdb
+O:\Web\msm\MSMHub_dev\bin\MSMHub.dll.config
+O:\Web\msm\MSMHub_dev\bin\MSMHub.dll
+O:\Web\msm\MSMHub_dev\bin\MSMHub.pdb
+O:\Web\msm\MSMHub_dev\bin\Microsoft.Web.Infrastructure.dll
+O:\Web\msm\MSMHub_dev\bin\Newtonsoft.Json.dll
+O:\Web\msm\MSMHub_dev\bin\Owin.dll
+O:\Web\msm\MSMHub_dev\bin\Microsoft.AspNet.SignalR.Core.xml
+O:\Web\msm\MSMHub_dev\bin\Microsoft.AspNet.SignalR.Owin.xml
+O:\Web\msm\MSMHub_dev\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+O:\Web\msm\MSMHub_dev\bin\Microsoft.Owin.Host.SystemWeb.xml
+O:\Web\msm\MSMHub_dev\bin\Microsoft.Web.Infrastructure.xml
+O:\Web\msm\MSMHub_dev\obj\Debug\MSMHub.csprojResolveAssemblyReference.cache
+O:\Web\msm\MSMHub_dev\obj\Debug\MSMHub.dll
+O:\Web\msm\MSMHub_dev\obj\Debug\MSMHub.pdb

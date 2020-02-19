@@ -105,6 +105,7 @@ app.appController = function($scope,$http, $filter, $interval){
 				$scope.Standard = "เก็บมาตรฐานสี";
 				$scope.Test = "ทดสอบ";
 
+
 	$scope.waste = {
 		list: $.cookie("ws"+$scope.machID) == undefined ? [] : JSON.parse($.cookie("ws"+$scope.machID)),
 		counter: $.cookie("qty"+$scope.machID) == undefined ? null : JSON.parse($.cookie("qty"+$scope.machID)),
@@ -200,6 +201,7 @@ app.appController = function($scope,$http, $filter, $interval){
 				});
 			},800);
 		}
+
 	}
 
 
@@ -599,7 +601,6 @@ app.appController = function($scope,$http, $filter, $interval){
 			$scope.currJobStepID = data.JOB_INFO[0].CURR_STEP_ID;
 			$scope.currJobStepSeq = data.JOB_INFO[0].CURR_STEP_SEQ;
 			$scope.currJobWdept = data.JOB_INFO[0].CURR_WDEPT_ID;
-			console.table("TON INIT LOAD" , [$scope.currJobID,$scope.currJobDesc,$scope.speedCurr,$scope.speedLastUpdate,$scope.currJobStepID,$scope.currJobStepSeq,$scope.currJobWdept ]);
 			if($scope.currJobWdept == "3"){
 				$scope.Plan = "เป้าหมายการผลิต";
 			}
@@ -643,13 +644,12 @@ app.appController = function($scope,$http, $filter, $interval){
 				$scope.Svg.DrawCurrJobRuler();
 				if($scope.currPlanUseTime != NaN){ $scope.Svg.DrawCurrJobPlan(); }
 				$scope.Svg.DrawCurrJobReal();
-				$scope.Svg.DrawFirst();
 				$scope.Svg.DrawWalFirst();
 				$scope.Svg.DrawWalTest();
 				$scope.Svg.DrawWalProof();
 				$scope.Svg.DrawWalStdColor();
+				$scope.setRedButton();
 			}
-
 	    	$scope.Svg.InitJobToday();
 	    	$scope.Svg.DrawJobTodayRuler();
 			$scope.Svg.DrawJobTodayPlan();
@@ -697,6 +697,32 @@ app.appController = function($scope,$http, $filter, $interval){
 		},3000);
 	}
 
+	$scope.setRedButton = function()
+	{
+		$scope.SetRedButton = {
+			button_first : false,
+			button_test : false,
+			button_proof : false,
+			button_std_color : false
+		};
+		$scope.currWalFirst.forEach(el => {
+			if (el.CHK1ST_END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
+				$scope.SetRedButton.button_first = true;
+		});
+		
+		$scope.currWalTest.forEach(el => {
+			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
+				$scope.SetRedButton.button_test = true;;
+		});
+		$scope.currWalProof.forEach(el => {
+			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
+				$scope.SetRedButton.button_proof = true;
+		});
+		$scope.currWalStdColor.forEach(el => {
+			if (el.END_DATE == null && el.MIN_ALL_TIME - el.WAL_STD_MIN > 0 ) 
+				$scope.SetRedButton.button_std_color = true;;
+		});
+	}
 	$scope.createDash = function(){
 		var c6 = $('#content-6').width();
 		$('.dashchart').css('width', (c6/2)-30);

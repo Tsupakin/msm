@@ -17,11 +17,12 @@ app.svgController = function($scope,$http){
 		    curJob.chartMarginX = 50;
 		    curJob.chartMarginTop = 10;
 			curJob.chartMarginTop2 = 25;
-			curJob.chartMarginTop3 = 25;
+			curJob.chartMarginTop3 = 32;
 			curJob.chartMarginTop4 = 15;
 			curJob.chartMarginTop5 = 15;
 			curJob.chartMarginTop6 = 15;
-		    curJob.chartHeight = 32;
+			curJob.chartHeight = 32;
+			curJob.chartHeightWal = 16;
 		    curJob.labelMarginLeft = 7;
 		    curJob.yStartLabel = 21;
 		   	//จุดเริ่มต้น แกน X
@@ -218,19 +219,20 @@ app.svgController = function($scope,$http){
 		    curJob.plan = planObj;
 		},
 		DrawWalFirst: function(){
-			$scope.Svg.DrawWal($scope.currWalFirst , curJob.y3Start);
+			$scope.Svg.DrawWal($scope.currWalFirst , curJob.y3Start , "currFirst");
 		},
 		DrawWalTest: function(){
-			$scope.Svg.DrawWal($scope.currWalTest , curJob.y6Start);
+			$scope.Svg.DrawWal($scope.currWalTest , curJob.y6Start, "currTest");
 		},
 		DrawWalProof: function(){
-			$scope.Svg.DrawWal($scope.currWalProof , curJob.y4Start);
+			$scope.Svg.DrawWal($scope.currWalProof , curJob.y4Start, "currProof");
 		},
 		DrawWalStdColor: function(){
-			$scope.Svg.DrawWal($scope.currWalStdColor , curJob.y5Start);
+			$scope.Svg.DrawWal($scope.currWalStdColor , curJob.y5Start, "currStdColor");
 		},
-		DrawWal: function(data , yStart){
+		DrawWal: function(data , yStart , reat_class){
 			if (data == null) return;
+			$('.'+reat_class).remove();
 			realSetup = $scope.currRealSetupTime;
 			realRun = $scope.currRealRunTime;
 			curJob.real = null;
@@ -250,15 +252,14 @@ app.svgController = function($scope,$http){
 					x: rect_wal_forst.xStart,
 					y: yStart,
 					width: rect_wal_forst.width,
-					height: curJob.chartHeight,
-					class: "rect currReal"
+					height: curJob.chartHeightWal,
+					class: "rect "+reat_class
 				}).style(curJob.chart2Style); //curJob.chart3Style
 				point = rect_wal_forst.xStart + rect_wal_forst.width;
 
 				//  Rect 2
 				//  เกินเวลา
 				if(overSetup > 0){
-					//console.log("TON เกินเวลา");
 					var rect2 = {};                     //  Reset rect.
 					rect2.xStart = point;
 					rect2.min = overSetup;
@@ -267,8 +268,8 @@ app.svgController = function($scope,$http){
 						x: rect2.xStart,
 						y: yStart,
 						width: rect2.width,
-						height: curJob.chartHeight,
-						class: "rect currReal", //troke-dash1 
+						height: curJob.chartHeightWal,
+						class: "rect "+reat_class, //troke-dash1 
 						 id: "running2",
 		            fill: "url(#hash2-1)"
 					}).style(curJob.chart4Style); 
@@ -288,13 +289,12 @@ app.svgController = function($scope,$http){
 						x: blink.xStart,
 						y: yStart,
 						width: blink.rectWidth,
-						height: curJob.chartHeight,
-						class: "rect stroke-dash2 currReal realblink",
+						height: curJob.chartHeightWal,
+						class: "rect stroke-dash2 realblink "+reat_class,
 						fill: "url(#hash2-2)"
 					});
 					curJob.blink = blink; 	
 				}
-
 			});
 		},
 		DrawCurrJobReal: function(){
@@ -354,9 +354,9 @@ app.svgController = function($scope,$http){
 		    }
 		    //  Text
 		    var txtc = rect1.xStart + ((rect1.width + (overSetup > 0 ? rect2.width : 0)) / 2)  - 43;
-		    minTemp = Math.round(realSetup);
+			minTemp = Math.round(realSetup);
 		    rect1.text = curJob.group.append("text").text(function(){
-		        return "Setup: " + minTemp + "m";
+		        return  setupTime - realSetup < 0 ? "Setup: " + minTemp + "m (Over time: "+ Math.abs(setupTime - realSetup)+" m)" : "Setup: " + minTemp + "m";
 		    }).attr({
 		        x: (txtc < rect1.xStart + curJob.labelMarginLeft ? rect1.xStart + curJob.labelMarginLeft : txtc)  , //rect1.xStart + curJob.labelMarginLeft
 		        y: curJob.y2Start + curJob.yStartLabel - 30,
@@ -412,9 +412,9 @@ app.svgController = function($scope,$http){
 
 
 		    	var txtc = rect3.xStart + ((rect3.width + (overRun > 0 ? rect4.width : 0)) / 2)  - 43;
-		        var minTemp = Math.round(realRun);
+				var minTemp = Math.round(realRun);
 		        rect3.text = curJob.group.append("text").text(function(){
-		            return "Running: " + minTemp + "m";
+		            return runTime - realRun < 0 ? "Running: " + minTemp + "m (Over time: "+Math.abs(runTime - realRun)+"m)" : "Running: " + minTemp + "m";
 		        }).attr({
 		            x: (txtc < rect1.xStart + curJob.labelMarginLeft ? rect3.xStart + curJob.labelMarginLeft : txtc)  ,//rect3.xStart + curJob.labelMarginLeft,
 		            y: curJob.y2Start + curJob.yStartLabel + 30,
@@ -799,34 +799,6 @@ app.svgController = function($scope,$http){
 				maxData: max
 			}
 		    return result;
-		},
-		DrawFirst: function(scaleNumMin){
-			realSetup = $scope.currRealSetupTime;
-			realRun = $scope.currRealRunTime;
-			curJob.real = null;
-			var point = curJob.xStart;
-			var planSetup = $scope.currPlanSetupTime;
-			var realRunning = {}; 
-
-    		var widthST = (realSetup > planSetup ? planSetup : realSetup); 
-    		var widthRN = (realRun > $scope.currPlanRunTime ? $scope.currPlanRunTime : realRun); 
-    		var overSetup = realSetup - $scope.currPlanSetupTime;
-    		var overRun = realRun - $scope.currPlanRunTime;
-    		realRunning._rect = []; 
-    	    //
-			var rect1 = {};
-		    rect1.xStart = point;
-		    rect1.min = widthST;
-		    rect1.width = rect1.min * 60 * $scope.secPerPixel;
-		    rect1.obj = curJob.group.append('rect').attr({
-		        x: rect1.xStart,
-		        y: parseInt(curJob.y2Start) + 70,
-		        width: rect1.width,
-		        height: curJob.chartHeight - 5,
-		        class: "rect wow"
-		    }).style(curJob.chart1Style); //curJob.chart3Style
-    		point = rect1.xStart + rect1.width;
-
 		}
 	}
 	var opa = 0;

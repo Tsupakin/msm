@@ -72,6 +72,13 @@
 		    color: #FFF;
 	  	}
 
+		.button_red
+		{
+			background-image: -webkit-linear-gradient(top,#f00 0,#bb0000 100%);
+    		background-image: -o-linear-gradient(top,#f00 0,#bb0000 100%);
+			background-color: #bb0000 !important;
+		}
+
 	</style>
 	<script type="text/javascript">
 		//var host = window.location.origin; //ไม่ได้อยากทำเลย แต่เครื่อง service ดันมี 2 ip แล้วไม่เห็นกันอีก
@@ -199,28 +206,28 @@
 			</div>
 			<div class="row">
 				<div class="col-md-3">
-					<div id="btn_Test" class="btn btn-default">						
+					<div id="btn_Test"  ng-class="SetRedButton.button_test ? 'btn btn-default button_red' : 'btn btn-default '">						
 					</div>
 					<div class="head_btn">
 						ทดสอบ
 					</div>
 				</div>
 				<div class="col-md-3">
-					<div id="btn_Proof" class="btn btn-default">						
+					<div id="btn_Proof" ng-class="SetRedButton.button_proof ? 'btn btn-default button_red' : 'btn btn-default '">						
 					</div>
 					<div class="head_btn">
 						Proof
 					</div>
 				</div>
 				<div class="col-md-3">
-					<div id="btn_Standard" class="btn btn-default">						
+					<div id="btn_Standard" ng-class="SetRedButton.button_std_color ? 'btn btn-default button_red' : 'btn btn-default '">					
 					</div>
 					<div class="head_btn">
 						เก็บมาตรฐานสี
 					</div>
 				</div>
 				<div class="col-md-3">
-					<div id="btn_Check" class="btn btn-default">						
+					<div id="btn_Check" ng-class="SetRedButton.button_first ? 'btn btn-default button_red' : 'btn btn-default '">						
 					</div>
 					<div class="head_btn">
 						ตรวจแผ่นแรก

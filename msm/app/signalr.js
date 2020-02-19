@@ -23,11 +23,11 @@ app.signalrController = function($scope,$http){
           console.log("TON currJobID" , $scope.currJobID)
           if($scope.currJobID != ""){ 
             $scope.Svg.DrawCurrJobReal();
-            $scope.Svg.DrawFirst(); 
             $scope.Svg.DrawWalFirst();
             $scope.Svg.DrawWalTest();
             $scope.Svg.DrawWalProof();
             $scope.Svg.DrawWalStdColor();
+            $scope.setRedButton();
           }
           $scope.Graph.UpdateSpeedGraph(parseInt(lastStamp),parseInt(currSpeed),parseInt(statusID));
           $scope.currRealSetupTime = parseInt(setTime);
